@@ -1,0 +1,9 @@
+请将 Windows 版 ffmpeg 中的 ffmpeg.exe 放在本目录（与本说明同级），
+程序会自动使用，无需修改系统 PATH。
+
+说明：启动 Whisper 界面时，会把本目录临时插到进程 PATH 最前面，
+便于 faster-whisper 等调用 ffmpeg 解码 m4a 等格式。
+
+下载可参考：https://www.gyan.dev/ffmpeg/builds/ （release builds，ffmpeg-release-essentials.zip）
+解压后将 bin\ffmpeg.exe 复制到此文件夹即可。
+建议同时将同目录下的 ffprobe.exe 一并复制，用于在日志中显示录音时长。

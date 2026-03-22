@@ -1,0 +1,34 @@
+核心需求：
+
+录音文件（m4a），转换为文本文件（txt）
+
+
+
+补充说明：
+
+1.使用python，win11操作系统，离线本地使用大模型Whisper（faster-whisper）。
+
+2.简单GUI：支持批量选择录音文件、开始转换；转换成功后自动打开资源管理器至输出 txt 所在文件夹（Windows）；日志带时间戳，并尽量显示每条录音时长（ffprobe）、单文件转换耗时与批量总耗时。
+
+3.转换后的文本文件与录音同目录，文件名为「主文件名_raw.txt」。例如 20250101上.m4a → 20250101上_raw.txt。每次执行转写均强制覆盖同名 _raw.txt，不保留旧稿。
+
+4.相关的代码、资源请打包好，软件要好迁移到其他win11电脑直接使用。
+
+
+
+优化与实现补充（相对原始需求）：
+
+5.识别语言默认强制为中文（Whisper：language=zh），不做多语言自动检测。
+
+6.Whisper 模型固定为 medium（界面不再提供其他档位）。
+
+7.设备下拉为 cuda、cpu（默认 cuda）。GPU（cuda）若缺少 CUDA/cuBLAS 运行库（如 cublas64_12.dll），程序自动回退 CPU；需用 GPU 时请安装与 pip 轮子匹配的 CUDA 12.x Toolkit 并将 bin 加入 PATH（详见 README）。
+
+8.ffmpeg 可放在项目 tools 目录或系统 PATH；启动时会将 tools 临时置于进程 PATH 前。
+
+9.输出文本为 UTF-8，全文经 zhconv 规范为大陆简体中文；写文件前合并汉字之间多余空格（zh_output）。
+
+10.Whisper 为通用转写：不使用 initial_prompt/hotwords；no_speech_threshold 置 None 以减少整窗跳过；默认关闭 VAD（cn_stock_asr.py 中可调）。
+
+11.详细安装、迁移、CUDA 说明与文件清单见 README.md；可选 PyInstaller 见 build_exe.bat 与 pyinstaller_whisper.spec。
+
