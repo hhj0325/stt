@@ -7,3 +7,8 @@ if not exist ".venv\Scripts\python.exe" (
   exit /b 1
 )
 ".\.venv\Scripts\python.exe" stt_whisper_gui.py
+if errorlevel 1 (
+  echo.
+  echo 启动失败，请查看上方报错。
+  pause
+)
