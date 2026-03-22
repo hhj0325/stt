@@ -121,7 +121,9 @@ class App(tk.Tk):
 
     def _set_busy(self, busy: bool) -> None:
         self._busy = busy
-        self.btn_run.configure(state=tk.DISABLED if busy else tk.NORMAL)
+        st = tk.DISABLED if busy else tk.NORMAL
+        self.btn_run.configure(state=st)
+        self.cmb_device.configure(state=st)
 
     def _pick_file(self) -> None:
         paths = filedialog.askopenfilenames(
@@ -193,7 +195,6 @@ class App(tk.Tk):
             "vad_filter": WHISPER_USE_VAD_FILTER,
             "language": "zh",
             "without_timestamps": True,
-            # None：不按「无语音概率」整窗跳过，尽量保留全部时间窗输出（可能略增静音段幻听）
             "no_speech_threshold": None,
         }
         if WHISPER_USE_VAD_FILTER:
