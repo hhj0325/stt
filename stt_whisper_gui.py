@@ -122,7 +122,7 @@ class App(tk.Tk):
     def _set_busy(self, busy: bool) -> None:
         self._busy = busy
         st = tk.DISABLED if busy else tk.NORMAL
-        self.btn_run.configure(state=st)
+        self.btn_run.configure(state=s t)
         self.cmb_device.configure(state=st)
 
     def _pick_file(self) -> None:
