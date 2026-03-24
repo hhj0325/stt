@@ -1,34 +1,67 @@
-核心需求：
+# 语音转文字项目需求（Whisper 版）
 
-录音文件（m4a），转换为文本文件（txt）
+## 1. 项目目标
 
+将录音文件（如 `.m4a`）转换为文本文件（`.txt`），并满足本地离线使用、批量处理与易迁移部署的要求。
 
+## 2. 基础功能需求
 
-补充说明：
+1. **运行环境**
+   - 使用 Python 开发。
+   - 目标系统为 Windows 11。
+   - 使用本地离线大模型 Whisper（`faster-whisper`）。
 
-1.使用python，win11操作系统，离线本地使用大模型Whisper（faster-whisper）。
+2. **图形界面（GUI）**
+   - 支持批量选择录音文件并一键开始转换。
+   - 转换完成后自动打开资源管理器并定位到输出文件所在目录（Windows）。
+   - 日志需带时间戳，并尽量显示：
+     - 每条录音时长（通过 `ffprobe` 获取）；
+     - 单文件转换耗时；
+     - 批量总耗时。
 
-2.简单GUI：支持批量选择录音文件、开始转换；转换成功后自动打开资源管理器至输出 txt 所在文件夹（Windows）；日志带时间戳，并尽量显示每条录音时长（ffprobe）、单文件转换耗时与批量总耗时。
+3. **输出文件规则**
+   - 输出文本与录音文件位于同一目录。
+   - 输出命名统一为：`主文件名_raw.txt`。
+   - 示例：`20250101上.m4a` -> `20250101上_raw.txt`。
+   - 每次转写都强制覆盖同名 `_raw.txt`，不保留旧稿。
 
-3.转换后的文本文件与录音同目录，文件名为「主文件名_raw.txt」。例如 20250101上.m4a → 20250101上_raw.txt。每次执行转写均强制覆盖同名 _raw.txt，不保留旧稿。
+4. **迁移与交付**
+   - 代码与相关资源需可打包交付。
+   - 需便于迁移到其他 Windows 11 电脑后直接使用。
 
-4.相关的代码、资源请打包好，软件要好迁移到其他win11电脑直接使用。
+## 3. 实现约束与优化要求
 
+5. **语言策略**
+   - 默认强制中文识别（Whisper：`language=zh`）。
+   - 不启用多语言自动检测。
 
+6. **模型策略**
+   - Whisper 模型固定为 `medium`。
+   - 界面不提供其他模型档位。
 
-优化与实现补充（相对原始需求）：
+7. **设备策略**
+   - 设备下拉仅提供 `cuda`、`cpu`（默认 `cuda`）。
+   - 当 GPU 缺少 CUDA/cuBLAS 运行库（如 `cublas64_12.dll`）时，程序自动回退到 CPU。
+   - 如需使用 GPU，需安装与 pip 轮子匹配的 CUDA 12.x Toolkit，并将其 `bin` 目录加入 PATH（详见 `README.md`）。
 
-5.识别语言默认强制为中文（Whisper：language=zh），不做多语言自动检测。
+8. **ffmpeg 约束**
+   - `ffmpeg` 可放在项目 `tools` 目录或系统 PATH。
+   - 程序启动时会将 `tools` 临时加入进程 PATH 前。
 
-6.Whisper 模型固定为 medium（界面不再提供其他档位）。
+9. **文本输出规范**
+   - 输出编码为 UTF-8。
+   - 文本统一转为大陆简体（`zhconv`）。
+   - 写文件前需合并汉字之间多余空格（`zh_output`）。
 
-7.设备下拉为 cuda、cpu（默认 cuda）。GPU（cuda）若缺少 CUDA/cuBLAS 运行库（如 cublas64_12.dll），程序自动回退 CPU；需用 GPU 时请安装与 pip 轮子匹配的 CUDA 12.x Toolkit 并将 bin 加入 PATH（详见 README）。
+10. **转写参数策略（通用转写）**
+    - 不使用 `initial_prompt` / `hotwords`。
+    - `no_speech_threshold` 设为 `None`，以减少整窗跳过。
+    - 默认关闭 VAD（可在 `cn_stock_asr.py` 调整）。
 
-8.ffmpeg 可放在项目 tools 目录或系统 PATH；启动时会将 tools 临时置于进程 PATH 前。
+## 4. 文档与打包要求
 
-9.输出文本为 UTF-8，全文经 zhconv 规范为大陆简体中文；写文件前合并汉字之间多余空格（zh_output）。
+11. **文档说明**
+    - 安装、迁移、CUDA 说明与文件清单维护在 `README.md`。
 
-10.Whisper 为通用转写：不使用 initial_prompt/hotwords；no_speech_threshold 置 None 以减少整窗跳过；默认关闭 VAD（cn_stock_asr.py 中可调）。
-
-11.详细安装、迁移、CUDA 说明与文件清单见 README.md；可选 PyInstaller 见 build_exe.bat 与 pyinstaller_whisper.spec。
-
+12. **可选打包**
+    - 可选 PyInstaller 打包流程见 `build_exe.bat` 与 `pyinstaller_whisper.spec`。
